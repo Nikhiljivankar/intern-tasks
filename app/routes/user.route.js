@@ -10,6 +10,7 @@ module.exports=app=>{
     router.put("/updateRecord/:id",auth,users.update)
     router.delete("/deletewithid/:id",users.delete)
     router.delete("/delete",users.deleteAll)
+    router.put("/resetPassword",users.ResetPassword)
 
     app.use('/api',router)
 }

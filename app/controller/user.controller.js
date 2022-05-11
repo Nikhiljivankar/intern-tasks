@@ -123,3 +123,28 @@ exports.deleteAll=(req,res)=>{
     })
   })
 }
+
+
+
+exports.ResetPassword= (req,res)=>{
+  const Email=req.body.Email
+  const Password=req.body.Password
+
+  User.update(req.body,{
+    where:{Email: Email}
+  }).then(num=>{
+    if(num==1){
+      res.send({
+        message: "user password updated sucessfully!"    })
+    }else{
+      res.send({
+        message:`Cannot Update user with Email=${Email}. Maybe User was not found`
+
+      })
+    }
+  }).catch(err=>{
+    res.status(500).send({
+      message:`Error Updating password with Email=${Email} `
+    })
+})
+}
