@@ -4,12 +4,8 @@ const db = require("../model");
 var jwt=require("jsonwebtoken");
 const config = require("../config/auth.config");
 const { users } = require("../model");
-// const { where } = require("sequelize/types");
 const User = db.users;
 const Op = db.Sequelize.Op;
-
-// const emailvalidator = require("email-validator");
-
 
 exports.signUp = async (req, res) => {
   
