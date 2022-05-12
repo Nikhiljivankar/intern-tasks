@@ -35,8 +35,7 @@ exports.signUp = async (req, res) => {
         Error:true,
         StatusCode:500,
         Message: err.message,
-        Records:Object.keys(data).length,
-        Data:data
+        
       });
     });
 };
@@ -57,8 +56,7 @@ exports.findAll=(req,res)=>{
         Error:true,
         StatusCode:500,
         Message: err.message,
-        Records:Object.keys(data).length,
-        Data:data
+       
       })
     })
   
@@ -85,8 +83,7 @@ exports.signIn=(req,res)=>{
       Error:true,
       StatusCode:500,
       Message: err.message,
-      // Records:Object.keys(data).length,
-      // Data:data
+    
     })
   })
 }
@@ -110,8 +107,8 @@ exports.update= (req,res)=>{
         Error:true,
         StatusCode:500,
         Message: err.message || `Cannot Update user with id=${id}. Maybe User was not found`,
-        Records:Object.keys(num).length,
-        Data:num
+        // Records:Object.keys(num).length,
+        // Data:num
 
       })
     }
@@ -120,8 +117,8 @@ exports.update= (req,res)=>{
       Error:true,
         StatusCode:500,
         Message: err.message || `Error Updating Tutorial with id=${id} `,
-        Records:Object.keys(data).length,
-        Data:data
+        // Records:Object.keys(data).length,
+        // Data:data
      
     })
 })
@@ -148,8 +145,8 @@ exports.delete=(req,res)=>{
         Error:true,
         StatusCode:500,
         Message: err.message || `cannot delete user with id=${id}`,
-        Records:Object.keys(data).length,
-        Data:data
+        // Records:Object.keys(data).length,
+        // Data:data
      
       })
     }
@@ -158,8 +155,8 @@ exports.delete=(req,res)=>{
       Error:true,
       StatusCode:500,
       Message: err.message || `could not delete user eith id=${id}`,
-      Records:Object.keys(data).length,
-      Data:data
+      // Records:Object.keys(data).length,
+      // Data:data
     })
   })
 }
@@ -181,8 +178,8 @@ exports.deleteAll=(req,res)=>{
         Error:true,
       StatusCode:500,
       Message: err.message || `could not delete user eith id=${id}`,
-      Records:Object.keys(data).length,
-      Data:data
+      // Records:Object.keys(data).length,
+      // Data:data
       })
     })
   })
@@ -194,11 +191,10 @@ exports.ResetPassword= async (req,res)=>{
   try{
   const Email=req.body.Email
   const Password=req.body.Password
-  const data=req.body
-  const userUpdate = await User.update(req.body,{where:{Email: data.Email}})
+  const userUpdate = await User.update(req.body,{where:{Email: Email}})
   // console.log(userUpdate)
   if(userUpdate[0]>0){
-  const userExist = await User.findOne({where:{Email:data.Email}})
+  const userExist = await User.findOne({where:{Email:Email}})
 
   if(userExist){
     res.status(200).send({
@@ -216,8 +212,8 @@ exports.ResetPassword= async (req,res)=>{
       Error:true,
       StatusCode:200,
       Message: "Not updated successfully" ,
-       Records:Object.keys(data).length,
-      Data:data
+      //  Records:Object.keys(data).length,
+      // Data:data
     })
   }
   }catch(err)
@@ -227,8 +223,8 @@ exports.ResetPassword= async (req,res)=>{
       Error:true,
       StatusCode:500,
       Message: err?err.message :`Error Updating password with Email=${Email} ` ,
-      Records:0,
-      Data:{}
+      // Records:0,
+      // Data:{}
     }) 
   }
 }
