@@ -7,7 +7,7 @@ module.exports=app=>{
     router.post('/createRecord',verifySignUp,users.signUp)
     router.get("/getAllRecord",users.findAll)
     router.get("/findwithid/:id",users.signIn)
-    router.put("/updateRecord/:id",auth,users.update)
+    router.put("/updateRecord",auth,users.update)
     router.delete("/deletewithid/:id",users.delete)
     router.delete("/delete",users.deleteAll)
     router.put("/resetPassword",users.ResetPassword)

@@ -4,6 +4,7 @@ const db = require("../model");
 var jwt=require("jsonwebtoken");
 const config = require("../config/auth.config");
 const { users } = require("../model");
+// const { where } = require("sequelize/types");
 const User = db.users;
 const Op = db.Sequelize.Op;
 
@@ -21,12 +22,21 @@ exports.signUp = async (req, res) => {
   };
   User.create(user)
     .then(data => {
-      res.send(data);
+      res.send({
+        Error:false,
+        StatusCode:200,
+        Message:"User Created Succesfully!!!!",
+        Records:Object.keys(data).length,
+        Data:data
+      });
     })
     .catch(err => {
       res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the User."
+        Error:true,
+        StatusCode:500,
+        Message: err.message,
+        Records:Object.keys(data).length,
+        Data:data
       });
     });
 };
@@ -36,9 +46,19 @@ exports.findAll=(req,res)=>{
   var condition = Name ? {Name:{[Op.like]: `%${Name}%`}} :null
 
   User.findAll({where : condition}).then(data=>{
-    res.send(data)}).catch(err=>{
+    res.send({
+      Error:false,
+      StatusCode:200,
+      Message:" All User fetched Succesfully!!!!",
+      Records:Object.keys(data).length,
+      Data:data
+    })}).catch(err=>{
       res.status(500).send({
-        message:err.message
+        Error:true,
+        StatusCode:500,
+        Message: err.message,
+        Records:Object.keys(data).length,
+        Data:data
       })
     })
   
@@ -52,35 +72,57 @@ exports.signIn=(req,res)=>{
       expiresIn:86400
     })
     res.send({
-      Data:data,
-      accessToken:token
+        Error:false,
+        StatusCode:200,
+        Message:"User SignIn Succesfully!!!!",
+        Records:Object.keys(data).length,
+        Data:data,
+        accessToken:token
 
     })
   }).catch(err=>{
     res.status(500).send({
-      message:err.message
+      Error:true,
+      StatusCode:500,
+      Message: err.message,
+      // Records:Object.keys(data).length,
+      // Data:data
     })
   })
 }
 
 exports.update= (req,res)=>{
-  const id = req.params.id
+  // const id = req.params.id
 
+  const data =req.body
   User.update(req.body,{
-    where:{id: id}
+    where:{id: data.id}
   }).then(num=>{
     if(num==1){
       res.send({
-        message: "user updated sucessfully!"    })
+        Error:false,
+        StatusCode:200,
+        Message:"User Updated  Succesfully!!!!",
+        Records:Object.keys(data).length,
+        Data:data   })
     }else{
       res.send({
-        message:`Cannot Update user with id=${id}. Maybe User was not found`
+        Error:true,
+        StatusCode:500,
+        Message: err.message || `Cannot Update user with id=${id}. Maybe User was not found`,
+        Records:Object.keys(num).length,
+        Data:num
 
       })
     }
   }).catch(err=>{
-    res.status(500).send({
-      message:`Error Updating Tutorial with id=${id} `
+    res.send({
+      Error:true,
+        StatusCode:500,
+        Message: err.message || `Error Updating Tutorial with id=${id} `,
+        Records:Object.keys(data).length,
+        Data:data
+     
     })
 })
 
@@ -89,36 +131,58 @@ exports.update= (req,res)=>{
 
 exports.delete=(req,res)=>{
   const id = req.params.id
-
+  const data =req.body
   User.destroy({
     where:{id:id}
   }).then(num=>{
     if(num==1){
       res.send({
-        message:"user deleted sucessfully!"
+        Error:false,
+        StatusCode:200,
+        Message:"User deleted  Succesfully!!!!",
+        Records:Object.keys(data).length,
+        Data:data
       })
     }else{
       res.send({
-        message:`cannot delete user with id=${id}`
+        Error:true,
+        StatusCode:500,
+        Message: err.message || `cannot delete user with id=${id}`,
+        Records:Object.keys(data).length,
+        Data:data
+     
       })
     }
   }).catch(err=>{
     res.status(500).send({
-      message:`could not delete user eith id=${id}`
+      Error:true,
+      StatusCode:500,
+      Message: err.message || `could not delete user eith id=${id}`,
+      Records:Object.keys(data).length,
+      Data:data
     })
   })
 }
 
 exports.deleteAll=(req,res)=>{
+  const data =req.body
   User.destroy({
     where:{},
     truncate:false
   }).then(nums=>{
     res.send({
-      message:`${num} User were deleted sucessfully!`
+      Error:false,
+        StatusCode:200,
+        Message:"All User deleted  Succesfully!!!!",
+        Records:Object.keys(data).length,
+        Data:data
     }).catch(err=>{
       res.send({
-        message:err.message
+        Error:true,
+      StatusCode:500,
+      Message: err.message || `could not delete user eith id=${id}`,
+      Records:Object.keys(data).length,
+      Data:data
       })
     })
   })
@@ -126,25 +190,45 @@ exports.deleteAll=(req,res)=>{
 
 
 
-exports.ResetPassword= (req,res)=>{
+exports.ResetPassword= async (req,res)=>{
+  try{
   const Email=req.body.Email
   const Password=req.body.Password
+  const data=req.body
+  const userUpdate = await User.update(req.body,{where:{Email: data.Email}})
+  // console.log(userUpdate)
+  if(userUpdate[0]>0){
+  const userExist = await User.findOne({where:{Email:data.Email}})
 
-  User.update(req.body,{
-    where:{Email: Email}
-  }).then(num=>{
-    if(num==1){
-      res.send({
-        message: "user password updated sucessfully!"    })
-    }else{
-      res.send({
-        message:`Cannot Update user with Email=${Email}. Maybe User was not found`
-
-      })
-    }
-  }).catch(err=>{
-    res.status(500).send({
-      message:`Error Updating password with Email=${Email} `
+  if(userExist){
+    res.status(200).send({
+      Error:false,
+      StatusCode:200,
+      Message: `Updating password with Email=${Email} ` ,
+       Records:Object.keys(userExist).length,
+      Data:userExist
     })
-})
+  }
+  
+  }
+  else{
+    res.status(200).send({
+      Error:true,
+      StatusCode:200,
+      Message: "Not updated successfully" ,
+       Records:Object.keys(data).length,
+      Data:data
+    })
+  }
+  }catch(err)
+  {
+    console.log(err)
+      res.status(500).send({
+      Error:true,
+      StatusCode:500,
+      Message: err?err.message :`Error Updating password with Email=${Email} ` ,
+      Records:0,
+      Data:{}
+    }) 
+  }
 }

@@ -11,22 +11,23 @@ const auth = async (req, res, next) => {
         const token = req.header('Authorization').replace('Bearer ', '')
         jwt.verify(token,config.secret,(err,decode)=>{
             if(err){
-                return res.status(401).send({
-                    message:"Unauthorized!!"
-                })
+                throw new Error("Unauthorized!")
+                    // message:"Unauthorized!!"
+                // })
             }
 
         })
-        const user = await User.findOne({ email: decoded.email })
+        const user = await User.findOne({ email: req.body.email })
 
         if (!user) {
-            throw new Error()
+            throw new Error("user not found")
         }
 
         req.user = user
         next()
     } catch (e) {
-        res.status(401).send({ error: 'Please authenticate.' })
+        // console.log(e.message)
+        res.status(401).send({ error: e.message })
     }
 }
 
